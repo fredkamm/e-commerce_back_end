@@ -7,9 +7,11 @@ router.get('/', async (req, res) => {
   // find all categories
   // be sure to include its associated Products
   try {
-    const catData = await Category.findAll(req.params.id);
+    const catData = await Category.findAll(req.params.id, {
+      include: [{ model: Product }],
+    });
     if (!catData) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No category with this id!' });
       return;
     }
     res.status(200).json(catData);
@@ -22,9 +24,11 @@ router.get('/:id', async (req, res) => {
   // find one category by its `id` value
   // be sure to include its associated Products
   try {
-    const catId = await Category.findByPk(req.params.id);
+    const catId = await Category.findByPk(req.params.id, {
+      include: [{ model: Product }],
+    });
     if (!catId) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No category with this id!' });
       return;
     }
     res.status(200).json(catId);
@@ -53,7 +57,7 @@ router.put('/:id', async (req, res) => {
       individualHooks: true
     });
     if (!updatedCat[0]) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No category with this id!' });
       return;
     }
     res.status(200).json(updatedCat);
@@ -65,14 +69,14 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
   try {
-    const deleteCat = await Tag.destroy(req.body, {
+    const deleteCat = await Category.destroy(req.body, {
       where: {
         category_id: req.params.category_id,
       },
       individualHooks: true
     });
     if (!deleteCat[0]) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No category with this id!' });
       return;
     }
     res.status(200).json(deleteCat);

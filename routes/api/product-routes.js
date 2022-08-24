@@ -4,15 +4,39 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
+  try {
+    const productData = await Product.findAll(req.params.id, {
+      include: [{ model: Category }, { model: Tag }],
+    });
+    if (!productData) {
+      res.status(404).json({ message: 'No tag with this id!' });
+      return;
+    }
+    res.status(200).json(productData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
+  try {
+    const productId = await Tag.findByPk(req.params.id, {
+      include: [{ model: Category }, { model: Tag }],
+    });
+    if (!productId) {
+      res.status(404).json({ message: 'No tag with this id!' });
+      return;
+    }
+    res.status(200).json(productId);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 // create new product
@@ -99,7 +123,7 @@ router.delete('/:id', async (req, res) => {
       individualHooks: true
     });
     if (!deleteProduct[0]) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No product with this id!' });
       return;
     }
     res.status(200).json(deleteProduct);

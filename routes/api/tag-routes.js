@@ -7,9 +7,11 @@ router.get('/', (req, res) => {
   // find all tags
   // be sure to include its associated Product data
   try {
-    const tagData = await Tag.findAll(req.params.id);
+    const tagData = await Tag.findAll(req.params.id, {
+      include: [{ model: Product }],
+    });
     if (!tagData) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No tag with this id!' });
       return;
     }
     res.status(200).json(tagData);
@@ -22,9 +24,11 @@ router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   try {
-    const tagId = await Tag.findByPk(req.params.id);
+    const tagId = await Tag.findByPk(req.params.id, {
+      include: [{ model: Product }],
+    });
     if (!tagId) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No tag with this id!' });
       return;
     }
     res.status(200).json(tagId);
@@ -53,7 +57,7 @@ router.put('/:id', async (req, res) => {
       individualHooks: true
     });
     if (!updatedTag[0]) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No tag with this id!' });
       return;
     }
     res.status(200).json(updatedTag);
@@ -72,7 +76,7 @@ router.delete('/:id', async (req, res) => {
       individualHooks: true
     });
     if (!deleteTag[0]) {
-      res.status(404).json({ message: 'No user with this id!' });
+      res.status(404).json({ message: 'No tag with this id!' });
       return;
     }
     res.status(200).json(deleteTag);
