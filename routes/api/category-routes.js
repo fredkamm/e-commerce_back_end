@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
   // find all categories
   // be sure to include its associated Products
   try {
-    const catData = await Category.findAll(req.params.id, {
+    const catData = await Category.findAll({
       include: [{ model: Product }],
     });
     if (!catData) {
@@ -40,8 +40,8 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   // create a new category
   try {
-    const catData = await Category.create(req.body);
-    res.status(200).json(catData);
+    const newCat = await Category.create(req.body);
+    res.status(200).json(newCat);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -50,32 +50,32 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   // update a category by its `id` value
   try {
-    const updatedCat = await Category.update(req.body, {
+    const updatedCat = await Category.update({
+      category_id: req.params.id,
+      category_name: req.body.category_name
+    }, {
       where: {
-        category_id: req.params.category_id,
-      },
-      individualHooks: true
+        category_id: req.params.id
+      }
     });
-    if (!updatedCat[0]) {
-      res.status(404).json({ message: 'No category with this id!' });
-      return;
+    if(!updatedCat[0]) {
+      res.status(404).json({message:"The category with that id cannot be found!"});
     }
     res.status(200).json(updatedCat);
-  } catch (err) {
-    res.status(500).json(err);
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
 router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
   try {
-    const deleteCat = await Category.destroy(req.body, {
+    const deleteCat = await Category.destroy({
       where: {
-        category_id: req.params.category_id,
-      },
-      individualHooks: true
+        category_id: req.params.id,
+      }
     });
-    if (!deleteCat[0]) {
+    if (!deleteCat) {
       res.status(404).json({ message: 'No category with this id!' });
       return;
     }
